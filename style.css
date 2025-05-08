@@ -385,6 +385,7 @@ body {
 
   .search-section select {
     width: 100%; /* Full width for dropdown */
+    text-align: center; /* Center text */
   }
 
   /* Center the products grid */
@@ -401,6 +402,11 @@ body {
   /* Ensure hero text remains centered on smaller screens */
   .hero {
     text-align: center; /* Reinforce center alignment */
+  }
+
+  /* Center selected-product elements */
+  #selectedProductsList {
+    justify-content: center; /* Center align items */
   }
 
   /* Center the footer */
