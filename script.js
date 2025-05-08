@@ -16,7 +16,7 @@ productsContainer.innerHTML = `
 // Function to detect text direction
 function detectTextDirection() {
   // Try to get browser language
-  const browserLang = navigator.language || navigator.userLanguage;
+  const browserLang = navigator.language || (navigator.languages && navigator.languages[0]) || 'en';
   
   // Get system text direction if available
   const systemDir = getComputedStyle(document.body).direction;
