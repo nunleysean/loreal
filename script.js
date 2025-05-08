@@ -4,6 +4,7 @@ const productsContainer = document.getElementById("productsContainer");
 const chatForm = document.getElementById("chatForm");
 const chatWindow = document.getElementById("chatWindow");
 const selectedProductsList = document.getElementById("selectedProductsList");
+const htmlElement = document.documentElement;
 
 /* Show initial placeholder until user selects a category */
 productsContainer.innerHTML = `
@@ -29,6 +30,10 @@ function displayProducts(products) {
       <div class="product-info">
         <h3>${product.name}</h3>
         <p>${product.brand}</p>
+      </div>
+      <div class="product-description">
+        <h4>${product.name}</h4>
+        <p>${product.description}</p>
       </div>
     </div>
   `
@@ -108,6 +113,8 @@ chatForm.addEventListener("submit", async (e) => {
       body: JSON.stringify({
         model: "gpt-4o",
         messages: conversationHistory,
+        max_tokens: 2000, // Increase token limit for longer responses
+        temperature: 0.7  // Add some creativity while keeping responses focused
       }),
     });
 
@@ -136,8 +143,76 @@ chatForm.addEventListener("submit", async (e) => {
   chatWindow.scrollTop = chatWindow.scrollHeight;
 });
 
+// Function to save selected products to localStorage
+function saveToLocalStorage(product, isSelected) {
+  const savedProducts = JSON.parse(localStorage.getItem('selectedProducts')) || [];
+  
+  if (isSelected) {
+    savedProducts.push(product);
+  } else {
+    const index = savedProducts.findIndex(p => p.id === product.id);
+    if (index > -1) savedProducts.splice(index, 1);
+  }
+  
+  localStorage.setItem('selectedProducts', JSON.stringify(savedProducts));
+}
+
+// Function to load selected products from localStorage
+function loadFromLocalStorage() {
+  const savedProducts = JSON.parse(localStorage.getItem('selectedProducts')) || [];
+  
+  savedProducts.forEach(product => {
+    const selectedItem = document.createElement("div");
+    selectedItem.classList.add("selected-item");
+    selectedItem.setAttribute("data-id", product.id);
+    selectedItem.innerHTML = `
+      <img src="${product.image}" alt="${product.name}" />
+      <div class="product-info">
+        <h3>${product.brand}</h3>
+        <p>${product.name}</p>
+      </div>
+    `;
+    selectedProductsList.appendChild(selectedItem);
+  });
+}
+
+// Function to detect text direction
+function detectTextDirection() {
+  // Try to get browser language
+  const browserLang = navigator.language || navigator.userLanguage;
+  
+  // Get system text direction if available
+  const systemDir = getComputedStyle(document.body).direction;
+  
+  // RTL languages list
+  const rtlLanguages = ['ar', 'he', 'fa', 'ur'];
+  
+  // Check if browser language is RTL
+  const isRTL = rtlLanguages.some(lang => browserLang.startsWith(lang));
+  
+  // Set direction based on detection
+  const direction = isRTL || systemDir === 'rtl' ? 'rtl' : 'ltr';
+  htmlElement.setAttribute('dir', direction);
+  htmlElement.setAttribute('lang', browserLang);
+  
+  return direction;
+}
+
 // Wait for the DOM to load
 document.addEventListener("DOMContentLoaded", () => {
+  const direction = detectTextDirection();
+
+  if (direction === 'rtl') {
+    const displayMessage = (message, isUser) => {
+      const messageClass = isUser ? 'user-message' : 'assistant-message';
+      chatWindow.innerHTML += `
+        <div class="chat-message ${messageClass}" style="text-align: ${isUser ? 'right' : 'left'}">
+          ${message}
+        </div>
+      `;
+    };
+  }
+
   const productsContainer = document.getElementById("productsContainer");
   const selectedProductsList = document.getElementById("selectedProductsList");
   const categoryFilter = document.getElementById("categoryFilter");
@@ -158,6 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
         `[data-id="${product.id}"]`
       );
       if (selectedItem) selectedItem.remove();
+      saveToLocalStorage(product, false);
     } else {
       productCard.classList.add("selected");
       // Add product to selected list
@@ -172,6 +248,7 @@ document.addEventListener("DOMContentLoaded", () => {
               </div>
       `;
       selectedProductsList.appendChild(selectedItem);
+      saveToLocalStorage(product, true);
     }
   };
 
@@ -196,6 +273,10 @@ document.addEventListener("DOMContentLoaded", () => {
               <div class="product-info">
                 <h3>${product.brand}</h3>
                 <p>${product.name}</p>
+              </div>
+              <div class="product-description">
+                <h4>${product.name}</h4>
+                <p>${product.description}</p>
               </div>
             `;
             productCard.addEventListener("click", () =>
@@ -241,6 +322,8 @@ document.addEventListener("DOMContentLoaded", () => {
                   .join(", ")}`,
               },
             ],
+            max_tokens: 2000, // Increase token limit for longer responses
+            temperature: 0.7  // Add some creativity while keeping responses focused
           }),
         }
       );
@@ -283,4 +366,18 @@ document.addEventListener("DOMContentLoaded", () => {
       routine
     )}</div>`;
   });
+
+  // Add clear all functionality
+  const clearAllBtn = document.getElementById("clearAllBtn");
+  clearAllBtn.addEventListener("click", () => {
+    // Clear selected products list
+    selectedProductsList.innerHTML = "";
+    localStorage.removeItem('selectedProducts');
+    // Remove selected class from all product cards
+    const selectedCards = document.querySelectorAll(".product-card.selected");
+    selectedCards.forEach(card => card.classList.remove("selected"));
+  });
+
+  // Load saved products when page loads
+  loadFromLocalStorage();
 });

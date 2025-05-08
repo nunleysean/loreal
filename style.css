@@ -253,6 +253,7 @@ body {
   gap: 15px;
   min-height: 160px;
   transition: transform 0.3s, border 0.3s;
+  position: relative; /* Add this for overlay positioning */
 }
 
 .product-card img {
@@ -285,6 +286,50 @@ body {
 .product-card:hover {
   border-color: #ff003b;
   transform: scale(1.05);
+}
+
+/* Product description overlay styling */
+.product-description {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 0, 59, 0.9);
+  color: #fff;
+  padding: 10px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  overflow-y: auto;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.product-description h4 {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 5px;
+  color: #fff;
+  text-align: center;
+}
+
+.product-description p {
+  font-size: 12px;
+  line-height: 1.4;
+  color: #fff;
+}
+
+.product-card:hover .product-description {
+  opacity: 1;
+}
+
+/* Adjust for touch devices */
+@media (hover: none) {
+  .product-description {
+    display: none;
+  }
 }
 
 /* Highlight selected product */
@@ -360,6 +405,51 @@ body {
 
 .generate-btn i {
   margin-right: 8px;
+}
+
+.clear-btn {
+  width: 100%;
+  margin: 20px 0 10px;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #fff;
+  background-color: #ff003b;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.clear-btn:hover {
+  background-color: #e3a535;
+}
+
+.clear-btn i {
+  margin-right: 8px;
+}
+
+/* RTL Support */
+[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+}
+
+[dir="rtl"] .chat-message.user-message {
+  align-self: flex-start;
+  text-align: right;
+}
+
+[dir="rtl"] .chat-message.assistant-message {
+  align-self: flex-end;
+  text-align: left;
+}
+
+[dir="rtl"] .chat-form button i,
+[dir="rtl"] .generate-btn i,
+[dir="rtl"] .clear-btn i {
+  margin-right: 0;
+  margin-left: 8px;
 }
 
 /* —— Add media query for smaller screens —— */
