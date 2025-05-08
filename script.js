@@ -95,8 +95,8 @@ chatForm.addEventListener("submit", async (e) => {
   document.getElementById("userInput").value = "";
 
   // Show a loading message
-  chatWindow.innerHTML +=
-    '<div class="chat-message assistant-message">Thinking...</div>';
+//  chatWindow.innerHTML +=
+    //'<div class="chat-message assistant-message">Thinking...</div>';
 
   try {
     // Fetch response from OpenAI API
