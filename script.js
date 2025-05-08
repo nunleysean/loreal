@@ -13,6 +13,28 @@ productsContainer.innerHTML = `
   </div>
 `;
 
+// Function to detect text direction
+function detectTextDirection() {
+  // Try to get browser language
+  const browserLang = navigator.language || navigator.userLanguage;
+  
+  // Get system text direction if available
+  const systemDir = getComputedStyle(document.body).direction;
+  
+  // RTL languages list
+  const rtlLanguages = ['ar', 'he', 'fa', 'ur'];
+  
+  // Check if browser language is RTL
+  const isRTL = rtlLanguages.some(lang => browserLang.startsWith(lang));
+  
+  // Set direction based on detection
+  const direction = isRTL || systemDir === 'rtl' ? 'rtl' : 'ltr';
+  htmlElement.setAttribute('dir', direction);
+  htmlElement.setAttribute('lang', browserLang);
+  
+  return direction;
+}
+
 /* Load product data from JSON file */
 async function loadProducts() {
   const response = await fetch("products.json");
@@ -176,27 +198,7 @@ function loadFromLocalStorage() {
   });
 }
 
-// Function to detect text direction
-function detectTextDirection() {
-  // Try to get browser language
-  const browserLang = navigator.language || navigator.userLanguage;
-  
-  // Get system text direction if available
-  const systemDir = getComputedStyle(document.body).direction;
-  
-  // RTL languages list
-  const rtlLanguages = ['ar', 'he', 'fa', 'ur'];
-  
-  // Check if browser language is RTL
-  const isRTL = rtlLanguages.some(lang => browserLang.startsWith(lang));
-  
-  // Set direction based on detection
-  const direction = isRTL || systemDir === 'rtl' ? 'rtl' : 'ltr';
-  htmlElement.setAttribute('dir', direction);
-  htmlElement.setAttribute('lang', browserLang);
-  
-  return direction;
-}
+
 
 // Wait for the DOM to load
 document.addEventListener("DOMContentLoaded", () => {
